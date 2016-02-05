@@ -1,7 +1,19 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+// var vhost = require('vhost');
+//
+// function createVirtualHost(domainName, dirPath) {
+//   return vhost(domainName, express.static(dirPath));
+// }
+
 var app = express();
+
+// var clientHost = createVirtualHost("www.untrobotics.com", 'dist');
+// var adminHost = createVirtualHost("admin.untrobotics.com", 'admin');
+//
+// app.use(clientHost);
+// app.use(adminHost);
 
 mongoose.connect("mongodb://roboticsclub:roboticsclub@ds059682.mongolab.com:59682/untrobo");
 //
@@ -10,6 +22,10 @@ db.on('error', console.error.bind(console, 'Connection error: '));
 db.once('open', function() {
   console.log("Successfully connected to MongoLab...")
 });
+
+
+app.use(express.static('dist'));
+app.use(express.static('admin'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,13 +45,39 @@ require('./routes/workshops')(router);
 require('./routes/guides')(router);
 require('./routes/blogs')(router);
 
-router.route("/*")
 
+router.route("/admin/*")
   .get(function(req, res) {
-    res.json({
-      data: "wildcard"
+    var options = {
+      root: __dirname + "/admin/"
+    };
+
+    res.sendFile("index.html", options, function(err) {
+      if (err) {
+        console.log(err);
+        res.status(err.status).end();
+      } else {
+        console.log("Served Admin App!!!");
+      }
     });
   });
+
+router.route("/*")
+  .get(function(req, res) {
+    var options = {
+      root: __dirname + "/dist/"
+    };
+
+    res.sendFile("index.html", options, function(err) {
+      if (err) {
+        console.log(err);
+        res.status(err.status).end();
+      } else {
+        console.log("Served Web App!!!");
+      }
+    });
+  });
+
 
 app.use('/', router);
 
