@@ -3,17 +3,28 @@ var Guide = require("../schemas/guides.js");
 function jsonapify(guide) {
 
   var data = {};
-  var attributes = {
-    title: guide.title,
-    body: guide.body,
-    created: guide.created,
-    updated: guide.updated,
-    tags: guide.tags,
-  }
 
-  data.type = "guide";
-  data.id = guide._id;
-  data.attributes = attributes;
+  if (guide) {
+    var attributes = {
+      title: guide.title,
+      body: guide.body,
+      created: guide.created,
+      updated: guide.updated,
+      tags: guide.tags,
+    }
+
+    data.type = "guide";
+    data.id = guide._id;
+    data.attributes = attributes;
+  } else {
+    data: {
+      error: {
+        attributes: {
+          title: "Something"
+        }
+      }
+    }
+  }
 
   return data;
 
@@ -26,6 +37,8 @@ module.exports = function(router) {
 
     .post(function(req, res) {
       console.log("[POST] /api/v2/guides");
+
+      console.log(req.body);
 
       if (req.body.data) {
 
@@ -56,6 +69,13 @@ module.exports = function(router) {
             });
           }
         });
+      } else {
+        res.json({
+          errors: [{
+            status: "505",
+            title: "Could not get data from the client!"
+          }]
+        })
       }
 
 
@@ -89,6 +109,7 @@ module.exports = function(router) {
     .get(function(req, res) {
 
       console.log("[GET] /api/v2/guides/%s", req.params.id);
+
       Guide.findOne({ _id: req.params.id }, function(err, guide) {
         if (err) {
           console.log(err);
@@ -105,6 +126,8 @@ module.exports = function(router) {
     })
 
     .delete(function(req, res) {
+
+      console.log("[DELETE] /api/v2/guides/%s", req.params.id);
       Guide.findByIdAndRemove(req.params.id, function(err, guide) {
 
         if (err) {
@@ -112,8 +135,9 @@ module.exports = function(router) {
             error: err
           });
         } else {
+          console.log(guide);
           res.json({
-            data: "Deleted Guide " + req.params.id
+            data: jsonapify(guide)
           });
         }
       });
@@ -121,12 +145,16 @@ module.exports = function(router) {
     })
 
     .patch(function(req, res) {
+      console.log("[PATCH] /api/v2/guides/");
+      console.log(req.body.data);
+
       var updates = {
-        body: "This value was updated.",
+        title: req.body.data.attributes.title,
+        body: req.body.data.attributes.body,
         updated: Date.now()
       }
 
-      Blog.findByIdAndUpdate(req.params.id, updates, function (err, guide) {
+      Guide.findByIdAndUpdate(req.params.id, updates, function (err, guide) {
         if (err) {
           res.json({
             error: err
