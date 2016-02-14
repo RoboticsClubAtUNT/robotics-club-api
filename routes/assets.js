@@ -25,7 +25,7 @@ function jsonapify(asset) {
     data = {
       error: {
         attributes: {
-          title: "Something"
+          title: "Asset does not exist."
         }
       }
     };
@@ -154,6 +154,13 @@ module.exports = function(router) {
       console.log(req.body.data);
 
       var updates = {
+        name: req.body.data.attributes.name,
+        description: req.body.data.attributes.description,
+        url: req.body.data.attributes.url,
+        quantity: req.body.data.attributes.quantity,
+        storageLocation: req.body.data.attributes.storageLocation,
+        unitOfMeasure: req.body.data.attributes.unitOfMeasure,
+        cost: req.body.data.attributes.cost,
         title: req.body.data.attributes.title,
         body: req.body.data.attributes.body,
         updated: Date.now()

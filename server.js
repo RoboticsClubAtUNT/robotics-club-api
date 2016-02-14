@@ -44,6 +44,7 @@ var router = express.Router();
 require('./routes/workshops')(router);
 require('./routes/guides')(router);
 require('./routes/blogs')(router);
+require('./routes/assets')(router);
 
 
 router.route("/admin/*")
