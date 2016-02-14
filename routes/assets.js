@@ -1,20 +1,25 @@
-var Guide = require("../schemas/guides.js");
+// assets route
+var Asset = require("../schemas/assets.js");
 
-function jsonapify(guide) {
+function jsonapify(asset) {
 
   var data = {};
 
-  if (guide) {
+  if (asset) {
     var attributes = {
-      title: guide.title,
-      body: guide.body,
-      created: guide.created,
-      updated: guide.updated,
-      tags: guide.tags,
+      name: asset.name,
+      description: asset.description,
+      url: asset.url,
+      quantity: asset.quantity,
+      storageLocation: asset.storageLocation,
+      unitOfMeasure: asset.unitOfMeasure,
+      cost: asset.cost,
+      created: asset.created,
+      updated: asset.updated
     };
 
-    data.type = "guide";
-    data.id = guide._id;
+    data.type = "asset";
+    data.id = asset._id;
     data.attributes = attributes;
   } else {
     data = {
@@ -32,11 +37,11 @@ function jsonapify(guide) {
 
 module.exports = function(router) {
 
-  router.route('/api/v2/guides')
-    // [POST] /api/v2/guides
+  router.route('/api/v2/assets')
+    // [POST] /api/v2/assets
 
     .post(function(req, res) {
-      console.log("[POST] /api/v2/guides");
+      console.log("[POST] /api/v2/assets");
 
       console.log(req.body);
 
@@ -44,28 +49,28 @@ module.exports = function(router) {
 
         var data = req.body.data.attributes;
 
-        var guide = new Guide({
-          title: data.title,
-          body: data.body,
+        var asset = new Asset({
+          name: data.name,
+          description: data.description,
+          url: data.url,
+          quantity: data.quantity,
+          storageLocation: data.storageLocation,
+          unitOfMeasure: data.unitOfMeasure,
+          cost: data.cost,
           created: Date.now(),
-          updated: Date.now(),
-          tags: ["some",
-                 "tags",
-                 "test",
-                 "demo",
-                 "temporary"]
+          updated: Date.now()
         });
 
-        guide.save(function(err) {
+        asset.save(function(err) {
           if (err) {
             console.log(err);
             res.json({
               error: err
             });
           } else {
-            console.log("A new guide was created.");
+            console.log("A new asset was created.");
             res.json({
-              data: jsonapify(guide)
+              data: jsonapify(asset)
             });
           }
         });
@@ -81,11 +86,11 @@ module.exports = function(router) {
 
     })
 
-    // [GET] /api/v2/guides
+    // [GET] /api/v2/assets
     .get(function(req, res) {
 
-      console.log("[GET] /api/v2/guides");
-      Guide.find(function(err, guides) {
+      console.log("[GET] /api/v2/assets");
+      Asset.find(function(err, assets) {
         if (err) {
           console.log(err);
           res.json({
@@ -93,8 +98,8 @@ module.exports = function(router) {
           });
         } else {
           var data = [];
-          guides.forEach(function(guide) {
-            data.push(jsonapify(guide));
+          assets.forEach(function(asset) {
+            data.push(jsonapify(asset));
           });
           res.json({
             data: data
@@ -104,13 +109,13 @@ module.exports = function(router) {
 
     });
 
-  router.route('/api/v2/guides/:id')
+  router.route('/api/v2/assets/:id')
 
     .get(function(req, res) {
 
-      console.log("[GET] /api/v2/guides/%s", req.params.id);
+      console.log("[GET] /api/v2/assets/%s", req.params.id);
 
-      Guide.findOne({ _id: req.params.id }, function(err, guide) {
+      Asset.findOne({ _id: req.params.id }, function(err, asset) {
         if (err) {
           console.log(err);
           res.json({
@@ -118,7 +123,7 @@ module.exports = function(router) {
           });
         } else {
           res.json({
-            data: jsonapify(guide)
+            data: jsonapify(asset)
           });
         }
       });
@@ -127,17 +132,17 @@ module.exports = function(router) {
 
     .delete(function(req, res) {
 
-      console.log("[DELETE] /api/v2/guides/%s", req.params.id);
-      Guide.findByIdAndRemove(req.params.id, function(err, guide) {
+      console.log("[DELETE] /api/v2/assets/%s", req.params.id);
+      Asset.findByIdAndRemove(req.params.id, function(err, asset) {
 
         if (err) {
           res.json({
             error: err
           });
         } else {
-          console.log(guide);
+          console.log(asset);
           res.json({
-            data: jsonapify(guide)
+            data: jsonapify(asset)
           });
         }
       });
@@ -145,7 +150,7 @@ module.exports = function(router) {
     })
 
     .patch(function(req, res) {
-      console.log("[PATCH] /api/v2/guides/");
+      console.log("[PATCH] /api/v2/assets/");
       console.log(req.body.data);
 
       var updates = {
@@ -154,7 +159,7 @@ module.exports = function(router) {
         updated: Date.now()
       };
 
-      Guide.findByIdAndUpdate(req.params.id, updates, function (err, guide) {
+      Asset.findByIdAndUpdate(req.params.id, updates, function (err, asset) {
         if (err) {
           res.json({
             error: err

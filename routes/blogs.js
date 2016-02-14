@@ -9,7 +9,7 @@ function jsonapify(blog) {
     created: blog.created,
     updated: blog.updated,
     author: blog.author
-  }
+  };
 
   data.type = "blog";
   data.id = blog._id;
