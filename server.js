@@ -20,7 +20,7 @@ mongoose.connect("mongodb://roboticsclub:roboticsclub@ds059682.mongolab.com:5968
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error: '));
 db.once('open', function() {
-  console.log("Successfully connected to MongoLab...")
+  console.log("Successfully connected to MongoLab...");
 });
 
 
