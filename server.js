@@ -45,6 +45,7 @@ require('./routes/workshops')(router);
 require('./routes/guides')(router);
 require('./routes/blogs')(router);
 require('./routes/assets')(router);
+require('./routes/membership-requests')(router);
 
 
 router.route("/admin/*")
